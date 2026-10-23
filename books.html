@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>Lab 4b - Question 2</title>
+</head>
+<body>
+
+    <h1>Question 2: Retrieve and Display JSON Data</h1>
+
+    <h2>Book Information</h2>
+
+    <p id="status" role="status">Loading books...</p>
+
+    <p>
+        <strong>Title of First Book:</strong>
+        <span id="firstTitle"></span>
+    </p>
+
+    <p>
+        <strong>Author of Second Book:</strong>
+        <span id="secondAuthor"></span>
+    </p>
+
+    <h3>Genres of Both Books</h3>
+    <ul id="genresList"></ul>
+
+    <script>
+        async function loadBooks() {
+            const status = document.getElementById("status");
+
+            try {
+                const response = await fetch("books.json");
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch JSON");
+                }
+
+                const data = await response.json();
+
+                if (!Array.isArray(data.books) ||
+                    data.books.length < 2) {
+                    throw new Error("Invalid books data");
+                }
+
+                const books = data.books;
+
+                document.getElementById("firstTitle")
+                    .textContent = books[0].title;
+
+                document.getElementById("secondAuthor")
+                    .textContent = books[1].author;
+
+                const genresList =
+                    document.getElementById("genresList");
+
+                genresList.replaceChildren();
+
+                books.forEach(function(book) {
+                    if (!Array.isArray(book.genres)) {
+                        throw new Error("Invalid genres data");
+                    }
+
+                    const li = document.createElement("li");
+
+                    li.textContent =
+                        book.title + " — " +
+                        book.genres.join(", ");
+
+                    genresList.appendChild(li);
+                });
+
+                status.textContent =
+                    "Books loaded successfully!";
+
+            } catch (error) {
+                status.textContent =
+                    "Unable to load book data. Please check the JSON file.";
+                console.error(error);
+            }
+        }
+
+        loadBooks();
+    </script>
+
+</body>
+</html>
